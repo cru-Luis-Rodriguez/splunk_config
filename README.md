@@ -1,4 +1,4 @@
-splunk_cru_config Cookbook
+splunk_config Cookbook
 ==========================
 Configures spunk forwarder client
 
