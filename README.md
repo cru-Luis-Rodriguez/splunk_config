@@ -4,18 +4,11 @@ Configures spunk forwarder client
 
 
 Requirements
-------------
-cookbook requirements. 
+------------ 
+
 depends chef-splunk 
 
-supports :
-
-amazon
-centos
-debian
-fedora
-redhat
-ubuntu
+supports :amazon, centos, debian, fedora, redhat, ubuntu
 
 
 Attributes
@@ -24,9 +17,9 @@ TODO: List your cookbook attributes here.
 
 # General settings
 
-default['splunk']['install_path’]=‘<-default location for splunk install’
+default['splunk']['install_path’]= ‘default location for splunk install’.
 
-#Use json on Opsworks Stack setting to provided attribute information. Attributes can not be nil
+Use json on Opsworks Stack setting to provided attribute information. Attributes can not be nil
 
 default['splunk']['pass']='nil'
 default['splunk']['newpass']='nil'
