@@ -1,5 +1,5 @@
 require "foodcritic"
-require "rspec/core/rake_task"
+#require "rspec/core/rake_task"
 
 desc "Run Foodcritic lint checks"
 FoodCritic::Rake::LintTask.new(:lint) do |t|
