@@ -8,7 +8,7 @@ end
 
 desc "Run ChefSpec examples"
 RSpec::Core::RakeTask.new(:spec) do |t|
-  t.rspec_opts = %w[-f JUnit -o results.xml]
+  t.rspec_opts = %w[-f rspec_junit_formatter -o results.xml]
 end
 
 desc "Run all tests"
