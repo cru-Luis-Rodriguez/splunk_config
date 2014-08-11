@@ -5,6 +5,6 @@ describe "skeleton::default" do
   let (:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
 
   it "does something" do
-    pending "Replace this with meaningful tests"
+   expect(chef_run).to render_file('/opt/splunkforwarder/etc/apps/search/local/inputs.conf')
   end
 end
