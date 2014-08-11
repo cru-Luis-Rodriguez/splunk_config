@@ -17,8 +17,8 @@ end
 # touchstone task
 task jenkins: %w(rubocop foodcritic)
 
-require "foodcritic"
-require "rspec/core/rake_task"
+#require "foodcritic"
+#require "rspec/core/rake_task"
 
 desc "Run Foodcritic lint checks"
 FoodCritic::Rake::LintTask.new(:lint) do |t|
