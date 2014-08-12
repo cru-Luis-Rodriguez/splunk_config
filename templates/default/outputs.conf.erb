@@ -1,8 +1,8 @@
 [tcpout]
-defaultGroup = <%= node['splunk']['group'] %>
+defaultGroup = <%= @default_group %>
 disabled=false
 
-[tcpout:<%= node['splunk']['group'] %>]
+[tcpout:<%= @default_group %>]
 server=<% @splunk_servers.map do |s| -%><%= s['splunk']['forward_server'] %>:<%= s['splunk']['receiver_port'] %> <% end.join(', ') -%>
 forwardedindex.0.whitelist = .*
 forwardedindex.1.blacklist = _.*
