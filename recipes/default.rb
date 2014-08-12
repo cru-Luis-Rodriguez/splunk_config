@@ -1,27 +1,55 @@
-# Cookbook Name:: splunk_cru_config
+# Cookbook Name:: splunk_config
 # Recipe:: default
 #
 
+include_attribute "chef-splunk"
+include_attribute "wildfly"
+
 #configure splunk
-fw_server = "node['splunk']['forward_server']"
 auth_user = "node['splunk']['auth']"
 default_pass = "node['splunk']['pass']"
 new_pass = "node['splunk']['newpass']"
 install_path = "node['splunk']['install_path']"
-add_monitor = "node['splunk']['monitor_path']"
 
-bash 'splunk_conf' do
-    if !File.exists?("#{node['splunk']['install_path']}/etc/apps/search/local/inputs.conf")
+begin
+    resources('service[splunk]')
+    rescue Chef::Exceptions::ResourceNotFound
+    service 'splunk'
+end
+
+directory "#{splunk_dir}/etc/system/local" do
+    recursive true
+    owner node['splunk']['user']['username']
+    group node['splunk']['user']['username']
+end
+
+bash 'change-admin-user-password-from-default' do
+    if !File.exists?("#{splunk_dir}/etc/.setup_#{user}_password")
     user "root"
     cwd "#{install_path}/bin"
     code <<-EOH
-    ./splunk start --accept-license
-    ./splunk enable boot-start
-    ./splunk add forward-server #{fw_server}:9997 -auth #{auth_user}:#{default_pass}
-    ./splunk add monitor #{add_monitor}
     ./splunk edit user #{auth_user} -password #{new_pass} -auth #{auth_user}:#{default_pass}
-    ./splunk restart
     EOH
     end
 end
 
+file "#{splunk_dir}/etc/.setup_#{user}_password" do
+    content 'true\n'
+    owner 'root'
+    group 'root'
+    mode 00600
+end
+
+template "#{splunk_dir}/etc/system/local/outputs.conf" do
+    source 'outputs.conf.erb'
+    mode 0644
+    variables :splunk_servers => splunk_servers
+    notifies :restart, 'service[splunk]'
+end
+
+template "#{splunk_dir}/etc/apps/search/local/inputs.conf" do
+    source 'inputs.conf.erb'
+    mode 0644
+    variables :splunk_servers => splunk_servers
+    notifies :restart, 'service[splunk]'
+end
