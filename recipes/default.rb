@@ -43,18 +43,13 @@ end
 template "#{splunk_dir}/etc/system/local/outputs.conf" do
     source 'outputs.conf.erb'
     mode 0644
-    variables (
-    'default_group'=> node['splunk']['group']
-    'splunk_servers' => node['splunk']['forward_server']
-               )
+    variables (:default_group => node['splunk']['group'],:splunk_servers => node['splunk']['forward_server'])
     notifies :restart, 'service[splunk]'
 end
 
 template "#{splunk_dir}/etc/apps/search/local/inputs.conf" do
     source 'inputs.conf.erb'
     mode 0644
-    variables (
-    'monitor_path' => node['splunk'['monitor_path']
-               )
+    variables (:monitor_path => node['splunk'['monitor_path'])
     notifies :restart, 'service[splunk]'
 end
