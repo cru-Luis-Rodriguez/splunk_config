@@ -45,7 +45,7 @@ template "#{splunk_dir}/etc/system/local/outputs.conf" do
     mode 0644
     variables (
     'default_group'=> node['splunk']['group']
-    ':splunk_servers' => splunk_servers
+    'splunk_servers' => node['splunk']['forward_server']
                )
     notifies :restart, 'service[splunk]'
 end
