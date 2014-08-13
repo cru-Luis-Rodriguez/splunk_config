@@ -1,0 +1,11 @@
+DEPENDENCIES
+  splunk_config
+    path: .
+    metadata: true
+
+GRAPH
+  chef-splunk (1.2.0)
+    chef-vault (>= 1.0.4)
+  chef-vault (1.1.2)
+  splunk_config (0.1.0)
+    chef-splunk (>= 0.0.0)
