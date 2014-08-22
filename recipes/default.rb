@@ -2,14 +2,12 @@
 # Recipe:: default
 #
 
-include_attribute "chef-splunk"
-include_attribute "wildfly"
 
 #configure splunk
-auth_user = "node['splunk']['auth']"
-default_pass = "node['splunk']['pass']"
-new_pass = "node['splunk']['newpass']"
-install_path = "node['splunk']['install_path']"
+user = node['splunk']['auth']
+pass = node['splunk']['pass']
+newpass = node['splunk']['newpass']
+splunk_dir = node['splunk']['install_path']
 
 begin
     resources('service[splunk]')
@@ -23,12 +21,36 @@ directory "#{splunk_dir}/etc/system/local" do
     group node['splunk']['user']['username']
 end
 
+directory "#{splunk_dir}/etc/apps/search/local" do
+    recursive true
+    owner node['splunk']['user']['username']
+    group node['splunk']['user']['username']
+    action :create
+end
+
+bash 'setup_as_service' do
+if !File.exists?('/etc/init.d/splunk')
+  user "root"
+  cwd "#{splunk_dir}/bin"
+  code <<-EOH
+  ./splunk enable boot-start --accept-license --answer-yes
+   EOH
+  end
+end
+
+service 'splunk' do
+  supports :status => true, :restart => true
+  provider Chef::Provider::Service::Init
+  action :start
+end
+
 bash 'change-admin-user-password-from-default' do
     if !File.exists?("#{splunk_dir}/etc/.setup_#{user}_password")
     user "root"
-    cwd "#{install_path}/bin"
+    cwd "#{splunk_dir}/bin"
     code <<-EOH
-    ./splunk edit user #{auth_user} -password #{new_pass} -auth #{auth_user}:#{default_pass}
+    ./splunk edit user #{user} -password #{newpass} -auth #{user}:#{pass}
+
     EOH
     end
 end
@@ -45,7 +67,8 @@ template "#{splunk_dir}/etc/system/local/outputs.conf" do
     mode 0644
     variables(
     :default_group => node['splunk']['group'],
-    :splunk_servers => node['splunk']['forward_server']
+    :splunk_servers => node['splunk']['forward_server'],
+    :splunk_port => node['splunk']['receiver_port']
              )
     notifies :restart, 'service[splunk]'
 end
